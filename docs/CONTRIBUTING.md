@@ -27,6 +27,7 @@ sections of this document are linked below:
   - [Getting Set Up \(JVM\)](#getting-set-up-jvm)
   - [Getting Set Up \(Documentation\)](#getting-set-up-documentation)
   - [Building Enso](#building-enso)
+  - [Testing Enso](#testing-enso)
   - [Running Enso](#running-enso)
 - [Pull Requests](#pull-requests)
 - [Documentation](#documentation)
@@ -320,12 +321,6 @@ Then, you can build the launcher using:
 sbt launcher/buildNativeImage
 ```
 
-#### Testing Enso
-
-Running the tests for the JVM enso components is as simple as running
-`sbt / test`. To test the Rust components you can run `cargo test`. Finally, you
-can run the WASM tests for the rust components by using `./run --test-wasm`.
-
 #### Passing Debug Options
 
 GraalVM provides some useful debugging options, including the ability to output
@@ -458,6 +453,39 @@ filing an issue with us.
 If your problem was not listed above, please
 [file a bug report](https://github.com/enso-org/enso/issues/new?assignees=&labels=Type%3A+Bug&template=bug-report.md&title=)
 in our issue tracker and we will get back to you as soon as possible.
+
+### Testing Enso
+
+Running the tests for the JVM enso components is as simple as running
+`sbt / test`. To test the Rust components you can run `cargo test`. Finally, you
+can run the WASM tests for the rust components by using `./run --test-wasm`.
+
+#### Testing Stdlib
+
+To run stdlib tests against the development version of Enso, run the `test/Test`
+project:
+
+```bash
+sh distribution/bin/enso --run test/Tests/
+```
+
+Some test suites require extra setup and enabled only on CI. To replicate the CI
+environment you should install and run extra services:
+
+```bash
+# Httpbin
+go get -v github.com/ahmetb/go-httpbin/cmd/httpbin
+$(go env GOPATH)/bin/httpbin -host :8080
+```
+
+To run all the stdlib test suites, set `CI=true` environment variable:
+
+```bash
+env CI=true sh distribution/bin/enso --run test/Tests/
+```
+
+For more details about the CI setup, you can check the
+`.github/workflows/scala.yml` GitHub workflow.
 
 ### Running Enso
 
