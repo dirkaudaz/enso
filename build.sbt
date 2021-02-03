@@ -74,7 +74,12 @@ GatherLicenses.distributions := Seq(
   Distribution(
     "std-lib-Table",
     file("distribution/std-lib/Table/THIRD-PARTY"),
-    Distribution.sbtProjects(`table`)
+    Distribution.sbtProjects(`table`),
+  ),
+  Distribution(
+    "std-lib-Image",
+    file("distribution/std-lib/Image/THIRD-PARTY"),
+    Distribution.sbtProjects(image),
   )
 )
 GatherLicenses.licenseConfigurations := Set("compile")
@@ -1035,6 +1040,7 @@ lazy val runtime = (project in file("engine/runtime"))
     (Runtime / compile) := (Runtime / compile)
       .dependsOn(`std-bits` / Compile / packageBin)
       .dependsOn(table / Compile / packageBin)
+      .dependsOn(image / Compile / packageBin)
       .value
   )
   .settings(
@@ -1255,6 +1261,7 @@ lazy val `locking-test-helper` = project
 val `std-lib-root`          = file("distribution/std-lib/")
 val `std-lib-polyglot-root` = `std-lib-root` / "Base" / "polyglot" / "java"
 val `table-polyglot-root`   = `std-lib-root` / "Table" / "polyglot" / "java"
+val `image-polyglot-root`   = `std-lib-root` / "Image" / "polyglot" / "java"
 
 lazy val `std-bits` = project
   .in(file("std-bits"))
@@ -1293,6 +1300,28 @@ lazy val `table` = project
         .copyDependencies(
           `table-polyglot-root`,
           "table.jar",
+          ignoreScalaLibrary = true
+        )
+        .value
+      result
+    }.value
+  )
+
+lazy val image = project
+  .in(file("image"))
+  .settings(
+    autoScalaLibrary := false,
+    Compile / packageBin / artifactPath :=
+      `image-polyglot-root` / "image.jar",
+    libraryDependencies ++= Seq(
+      "org.openpnp" % "opencv" % "4.3.0-3"
+    ),
+    Compile / packageBin := Def.task {
+      val result = (Compile / packageBin).value
+      StdBits
+        .copyDependencies(
+          `image-polyglot-root`,
+          "image.jar",
           ignoreScalaLibrary = true
         )
         .value
