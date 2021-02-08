@@ -3,6 +3,7 @@ package org.enso.compiler.test
 import org.enso.compiler.codegen.AstToIr
 import org.enso.compiler.context.{FreshNameSupply, InlineContext, ModuleContext}
 import org.enso.compiler.core.IR
+import org.enso.compiler.data.CompilerConfig
 import org.enso.compiler.pass.{PassConfiguration, PassManager}
 import org.enso.syntax.text.{AST, Parser}
 import org.scalatest.matchers.should.Matchers
@@ -228,12 +229,14 @@ trait CompilerRunner {
   def buildModuleContext(
     moduleName: QualifiedName                    = QualifiedName.simpleName("Test_Module"),
     freshNameSupply: Option[FreshNameSupply]     = None,
-    passConfiguration: Option[PassConfiguration] = None
+    passConfiguration: Option[PassConfiguration] = None,
+    compilerConfig: CompilerConfig               = defaultConfig
   ): ModuleContext = {
     ModuleContext(
       module            = Module.empty(moduleName),
       freshNameSupply   = freshNameSupply,
-      passConfiguration = passConfiguration
+      passConfiguration = passConfiguration,
+      compilerConfig    = compilerConfig
     )
   }
 
@@ -250,7 +253,8 @@ trait CompilerRunner {
     localScope: Option[LocalScope]               = None,
     isInTailPosition: Option[Boolean]            = None,
     freshNameSupply: Option[FreshNameSupply]     = None,
-    passConfiguration: Option[PassConfiguration] = None
+    passConfiguration: Option[PassConfiguration] = None,
+    compilerConfig: CompilerConfig               = defaultConfig
   ): InlineContext = {
     val mod = Module.empty(QualifiedName.simpleName("Test_Module"))
     mod.unsafeBuildIrStub()
@@ -259,7 +263,10 @@ trait CompilerRunner {
       freshNameSupply   = freshNameSupply,
       passConfiguration = passConfiguration,
       localScope        = localScope,
-      isInTailPosition  = isInTailPosition
+      isInTailPosition  = isInTailPosition,
+      compilerConfig    = compilerConfig
     )
   }
+
+  val defaultConfig: CompilerConfig = CompilerConfig()
 }
